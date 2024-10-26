@@ -5,7 +5,7 @@ const NUM_ROOMS: usize = 20;
 pub struct MapBuilder {
     pub map: Map,
     pub rooms: Vec<Rect>,
-    pub player_state: Point,
+    pub player_start: Point,
 }
 
 impl MapBuilder {
@@ -80,12 +80,12 @@ impl MapBuilder {
         let mut mb = MapBuilder {
             map: Map::new(),
             rooms: Vec::new(),
-            player_state: Point::zero(),
+            player_start: Point::zero(),
         };
         mb.fill(TileType::Wall);
         mb.builder_random_rooms(rng);
         mb.build_corridors(rng);
-        mb.player_state = mb.rooms[0].center();
+        mb.player_start = mb.rooms[0].center();
         mb
     }
 }
