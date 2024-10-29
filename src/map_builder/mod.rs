@@ -1,13 +1,19 @@
 mod automata;
+mod drunkard;
 mod empty;
+mod prefab;
 
 use crate::prelude::*;
+use prefab::apply_prefab;
 
 #[allow(unused_imports)]
 use automata::CellularAutomataArchitect;
 
 #[allow(unused_imports)]
 use empty::EmptyArchitect;
+
+#[allow(unused_imports)]
+use drunkard::DrunkardsWalkArchitect;
 
 trait MapArchitect {
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder;
@@ -136,6 +142,13 @@ impl MapBuilder {
         spawns
     }
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
-        CellularAutomataArchitect.new(rng)
+        let mut architect: Box<dyn MapArchitect> = match rng.range(0, 3) {
+            0 => Box::new(EmptyArchitect),
+            1 => Box::new(DrunkardsWalkArchitect),
+            _ => Box::new(CellularAutomataArchitect),
+        };
+        let mut mb = architect.new(rng);
+        apply_prefab(&mut mb, rng);
+        mb
     }
 }
