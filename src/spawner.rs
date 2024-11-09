@@ -8,16 +8,12 @@ fn orc() -> (i32, String, FontCharType) {
     (2, "orc".to_string(), to_cp437('o'))
 }
 
-pub fn spawn_entity(
-    ecs: &mut World,
-    rng: &mut RandomNumberGenerator,
-    pos: Point,
-){
-    let roll = rng.roll_dice(1,6);
+pub fn spawn_entity(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point) {
+    let roll = rng.roll_dice(1, 6);
     match roll {
         1 => spawn_healing_potion(ecs, pos),
         2 => spawn_magic_mapper(ecs, pos),
-        _ => spawn_monster(ecs, rng,pos),
+        _ => spawn_monster(ecs, rng, pos),
     }
 }
 
@@ -58,7 +54,7 @@ pub fn spawn_amulet_of_yala(ecs: &mut World, pos: Point) {
 
 pub fn spawn_player(ecs: &mut World, pos: Point) {
     ecs.push((
-        Player,
+        Player { map_level: 0 },
         pos,
         Render {
             color: ColorPair::new(WHITE, BLACK),
