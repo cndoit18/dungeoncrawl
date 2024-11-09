@@ -44,5 +44,12 @@ pub fn hud(ecs: &SubWorld) {
             draw_batch.print(Point::new(3, y), format!("{} : {}", y - 2, &name.0));
             y += 1;
         });
+    if y > 3 {
+        draw_batch.print_color(
+            Point::new(3, 2),
+            "Items carried",
+            ColorPair::new(YELLOW, BLACK),
+        );
+    }
     draw_batch.submit(10000).expect("Batch error");
 }

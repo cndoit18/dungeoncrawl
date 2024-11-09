@@ -36,6 +36,15 @@ pub fn player_input(
                     });
                 Point::new(0, 0)
             }
+            VirtualKeyCode::Key1 => use_item(0, ecs, commands),
+            VirtualKeyCode::Key2 => use_item(1, ecs, commands),
+            VirtualKeyCode::Key3 => use_item(2, ecs, commands),
+            VirtualKeyCode::Key4 => use_item(3, ecs, commands),
+            VirtualKeyCode::Key5 => use_item(4, ecs, commands),
+            VirtualKeyCode::Key6 => use_item(5, ecs, commands),
+            VirtualKeyCode::Key7 => use_item(6, ecs, commands),
+            VirtualKeyCode::Key8 => use_item(7, ecs, commands),
+            VirtualKeyCode::Key9 => use_item(8, ecs, commands),
             _ => Point::new(0, 0),
         };
 
@@ -65,7 +74,6 @@ pub fn player_input(
             });
 
         if (delta.x != 0 || delta.y != 0) && !hit_somethine {
-            did_somthing = true;
             commands.push((
                 (),
                 WantsToMove {
@@ -75,15 +83,31 @@ pub fn player_input(
             ));
         }
 
-        if !did_somthing {
-            if let Ok(health) = ecs
-                .entry_mut(player_entity)
-                .unwrap()
-                .get_component_mut::<Health>()
-            {
-                health.current = i32::min(health.max, health.current + 1);
-            }
-        }
         *turn_state = TurnState::PlayerTurn;
     }
+}
+
+fn use_item(n: usize, ecs: &mut SubWorld, commands: &mut CommandBuffer) -> Point {
+    let player_entity = <(Entity, &Player)>::query()
+        .iter(ecs)
+        .map(|(entity, _player)| *entity)
+        .next()
+        .unwrap();
+    let item_entity = <(Entity, &Item, &Carried)>::query()
+        .iter(ecs)
+        .filter(|(_, _, carried)| carried.0 == player_entity)
+        .enumerate()
+        .filter(|(item_count, (_, _, _))| *item_count == n)
+        .map(|(_, (item_entity, _, _))| *item_entity)
+        .next();
+    if let Some(item_entity) = item_entity {
+        commands.push((
+            (),
+            ActivateItem {
+                used_by: player_entity,
+                item: item_entity,
+            },
+        ));
+    }
+    Point::zero()
 }
